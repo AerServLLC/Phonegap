@@ -1,6 +1,7 @@
 prereq:
 
 1.  cordova cli to create app as described @ http://cordova.apache.org/docs/en/4.0.0/guide_cli_index.md.html
+2.  ios-deploy (for sample app) https://github.com/phonegap/ios-deploy
 
 supported aerserv sdk:
 
