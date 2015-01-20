@@ -9,8 +9,8 @@
  */
 #import <Foundation/Foundation.h>
 #import <Cordova/CDV.h>
-#import "AerServSDKMax/ASInterstitialViewController.h"
-#import "AerServSDKMax/ASAdView.h"
+#import "AerServSDKMin/ASInterstitialViewController.h"
+#import "AerServSDKMin/ASAdView.h"
 
 @interface AerServSDKPhoneGapPlugin : CDVPlugin
 
