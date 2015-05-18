@@ -9,15 +9,15 @@
  */
 #import <Foundation/Foundation.h>
 #import <Cordova/CDV.h>
-#import "AerServSDKMin/ASInterstitialViewController.h"
-#import "AerServSDKMin/ASAdView.h"
+#import "AerServSDK/ASInterstitialViewController.h"
+#import "AerServSDK/ASAdView.h"
 
 @interface AerServSDKPhoneGapPlugin : CDVPlugin
 
 - (void) loadInterstitial:(CDVInvokedUrlCommand *)command;
 - (void) loadBanner:(CDVInvokedUrlCommand *)command;
-- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords;
-- (void) showBanner:(NSString *) plc width:(int) width height:(int) height position:(int) position keyWords:(NSString *) keyWords;
+- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords preload:(bool) preload;
+- (void) showBanner:(NSString *) plc width:(int) width height:(int) height position:(int) position keyWords:(NSString *) keyWords preload:(bool) preload;
 - (void) killBanner:(CDVInvokedUrlCommand *)command;
 - (void) pauseBanner; //not supported yet
 - (void) playBanner; //not supported yet

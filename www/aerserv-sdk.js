@@ -30,12 +30,16 @@ AerServSDK.BANNER_BOTTOM = 1;
  * @param {function} onAdFailedCallback - the callback function for when the ad has failed to load 
  * @param {function} onAdShownCallback - the callback function for when the ad has finished 
  * @param {function} onAdClickedCallback - the callback function for when the ad has been touched 
- * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed 
+ * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed
+ * @param {function} onAdDismissedCallback - the callback function for when the ad has finished preloading
  * @param {string} keyWords - comma seperated string of keywords to filter ads with 
+ * @param {bool} preload - boolean to enable preloading functionality
  *
  */
 AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallback, onAdShownCallback,
-	 																	  onAdClickedCallback, onAdDismissedCallback, keyWords) {
+	 																	  onAdClickedCallback, onAdDismissedCallback,
+																		  onAdPreloadCallback,
+																		  keyWords, preload) {
 
 	if(keyWords == null)
 				keyWords = "";
@@ -45,6 +49,7 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
 	this.onAdShownCallback = onAdShownCallback;
 	this.onAdClickedCallback = onAdClickedCallback;
 	this.onAdDismissedCallback = onAdDismissedCallback;
+	this.onAdPreloadCallback = onAdPreloadCallback;
 
 	self = this;
 	
@@ -61,7 +66,7 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
 							},
 							"AerServSDKPhoneGapPlugin",
 							"loadInterstitial",
-							[plc, keyWords]
+							[plc, keyWords, preload]
 
 			);
 
@@ -80,10 +85,11 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
  * @param {function} onAdClickedCallback - the callback function for when the ad has been touched 
  * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed 
  * @param {string} keyWords - comma seperated string of keywords to filter ads with 
+ * @param {bool} preload - boolean to enable preloading functionality
  *
  */
 AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallback, onAdFailedCallback, onAdShownCallback,
-																 onAdClickedCallback, onAdDismissedCallback, keyWords) {
+																 onAdClickedCallback, onAdDismissedCallback, keyWords, preload) {
 
 	if(keyWords == null)
 				keyWords = "";
@@ -109,7 +115,7 @@ AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallbac
 							},
 							"AerServSDKPhoneGapPlugin",
 							"loadBanner",
-							[plc, width, height, position, keyWords]
+							[plc, width, height, position, keyWords, preload]
 
 			);
 

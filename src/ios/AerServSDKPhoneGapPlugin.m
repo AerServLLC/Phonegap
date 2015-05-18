@@ -37,18 +37,20 @@
 	self.interstitial_command =  command;
 	NSString* plc = [command.arguments objectAtIndex:0];
 	NSString* keyWords = [command.arguments objectAtIndex:1];
-	[self showInterstitial:plc keyWords:keyWords];
-
-
+	[self showInterstitial:plc keyWords:keyWords preload:[command.arguments objectAtIndex:2]];
+	
 }
 
-- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords{
+- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords preload:(bool) preload {
 
 	self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
 
 
 	self.adController = [ASInterstitialViewController viewControllerForPlacementID:plc withDelegate:self];
-
+	if(preload) {
+		self.adController.isPreload = preload;
+	}
+	
 	if([keyWords length] != 0) {
 
 		NSMutableArray *asKeyWords = [[keyWords componentsSeparatedByString:@","] mutableCopy];    		
@@ -127,12 +129,12 @@
 	int height = [[command.arguments objectAtIndex:2] integerValue];
 	int position = [[command.arguments objectAtIndex:3] integerValue];
 	NSString* keyWords = [command.arguments objectAtIndex:4];
-	[self showBanner:plc width:width height:height position:position keyWords:keyWords];
-
-
+	bool preload = [command.arguments objectAtIndex:5];
+	[self showBanner:plc width:width height:height position:position keyWords:keyWords preload:preload];
+	
 }
 
-- (void) showBanner:(NSString *) plc width:(int) width height:(int) height position:(int) position keyWords:(NSString *) keyWords{
+- (void) showBanner:(NSString *) plc width:(int) width height:(int) height position:(int) position keyWords:(NSString *) keyWords preload:(bool) preload {
 
 	self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
 
@@ -234,6 +236,15 @@
 	[self.commandDelegate sendPluginResult:result callbackId:self.banner_command.callbackId];
 
 
+}
+
+-(void) adViewDidPreloadAd:(ASAdView *)adView {
+	NSLog(@"Banner Ad has preloaded");
+	
+	NSArray *args = @[@"onAdPreloadCallback", @""];
+	CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
+	[result setKeepCallbackAsBool:YES]; 
+	[self.commandDelegate sendPluginResult:result callbackId:self.interstitial_command.callbackId];
 }
 
 -(void) adViewDidFailToLoadAd:(ASAdView *)adView withError:(NSError *)error {
