@@ -16,147 +16,102 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.util.Log;
 import com.aerserv.sdk.*;
+import com.aerserv.sdk.AerServBanner;
+import com.aerserv.sdk.AerServConfig;
 import com.aerserv.sdk.utils.DisplayUtils;
 
 import java.util.ArrayList;
 
-public class ASAdViewWrapper implements Facade {
+public class ASAdViewWrapper {
 
-	private ASAdView adView;
-	private Activity activity;
-	private String plc;
-	private FrameLayout.LayoutParams params;
+    private AerServBanner adView;
+    private Activity activity;
+    private String plc;
+    private FrameLayout.LayoutParams params;
 
-	public ASAdViewWrapper(final Activity activity, final String plc,
-			final int width, final int height,
-			final int position) {
+    public ASAdViewWrapper(final Activity activity, final AerServConfig config,
+                           final int width, final int height,
+                           final int position) {
 
-		this.activity = activity;
-		this.plc = plc;
-		this.activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
+        this.activity = activity;
+        this.plc = plc;
+        this.activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adView = new AerServBanner(activity);
+                adView.configure(config);
 
-				adView = new ASAdView(activity);
-
-				params = new FrameLayout.LayoutParams(DisplayUtils.convertToDip(activity, width),
-					DisplayUtils.convertToDip(activity, height));
-
-
-				if (position == 0)
-					params.gravity = Gravity.TOP | Gravity.CENTER;
-				else
-					params.gravity = Gravity.BOTTOM | Gravity.CENTER;
-			}
-		});
+                params = new FrameLayout.LayoutParams(DisplayUtils.convertDipToPx(activity, width),
+                        DisplayUtils.convertDipToPx(activity, height));
 
 
-	}
+                if (position == 0)
+                    params.gravity = Gravity.TOP | Gravity.CENTER;
+                else
+                    params.gravity = Gravity.BOTTOM | Gravity.CENTER;
+            }
+        });
 
-	@Override
-	public void loadAd() {
-		this.activity.runOnUiThread(new Runnable() {
 
-			@Override
-			public void run() {
+    }
 
-				activity.addContentView(adView, params);
-				adView.loadAd(activity, plc);
-			}
+    public void loadAd() {
+        this.activity.runOnUiThread(new Runnable() {
 
-		});
-	}
+            @Override
+            public void run() {
 
-	@Override
-	public void kill() {
+                activity.addContentView(adView, params);
+                adView.show();
+            }
 
-		this.activity.runOnUiThread(new Runnable() {
+        });
+    }
 
-			@Override
-			public void run() {
+    public void kill() {
 
-				adView.kill();
+        this.activity.runOnUiThread(new Runnable() {
 
-				ViewGroup parentGroup = (ViewGroup)adView.getParent();
+            @Override
+            public void run() {
 
-				if(parentGroup != null)
-					parentGroup.removeView(adView);
-			}
-		});
+                adView.kill();
 
-	}
+                ViewGroup parentGroup = (ViewGroup)adView.getParent();
 
-	@Override
-	public void play(){
+                if(parentGroup != null)
+                    parentGroup.removeView(adView);
+            }
+        });
 
-		this.activity.runOnUiThread(new Runnable() {
+    }
 
-			@Override
-			public void run() {
-	
-				adView.play();
-			}
+    public void play(){
 
-		});
-	
-	}
+        this.activity.runOnUiThread(new Runnable() {
 
-	@Override
-	public void pause(){
+            @Override
+            public void run() {
 
-		this.activity.runOnUiThread(new Runnable() {
+                adView.play();
+            }
 
-			@Override
-			public void run() {
-				
-				adView.pause();
+        });
 
-			}
+    }
 
-		});
-	
-	}
+    public void pause(){
 
-	@Override
-	public boolean isLoading() {
+        this.activity.runOnUiThread(new Runnable() {
 
-				
-		return adView.isLoading();
+            @Override
+            public void run() {
 
-	}
+                adView.pause();
 
-	@Override
-	public FacadeType getType() {
+            }
 
-						
-		return adView.getType();
-	
-	}
+        });
 
-	@Override
-	public void setKeyWords(final ArrayList<String> keywords) {
-
-		this.activity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-
-				adView.setKeyWords(keywords);
-			}
-		});
-
-	}
-	@Override
-	public void setAdListener(final ASAdListener asAdListener){
-
-		this.activity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-
-				adView.setAdListener(asAdListener);
-			}
-		});
-
-	}
+    }
 }

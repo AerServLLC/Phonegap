@@ -1,6 +1,5 @@
 /* Copyright (c) AerServ, 2015
  *
- * This unpublished material is proprietary to AerServ, LLC.
  * All rights reserved. The methods and
  * techniques described herein are considered trade secrets
  * and/or confidential. Reproduction or distribution, in whole
@@ -22,283 +21,263 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.Throwable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.aerserv.sdk.ASAdView;
-import com.aerserv.sdk.ASAdListener;
-import com.aerserv.sdk.ASInterstitial;
+import java.util.HashMap;
+import java.util.List;
+
+import com.aerserv.sdk.AerServConfig;
+import com.aerserv.sdk.AerServEvent;
+import com.aerserv.sdk.AerServEventListener;
+import com.aerserv.sdk.AerServInterstitial;
+import com.aerserv.sdk.AerServVirtualCurrency;
 
 public class AerServSDKPhoneGapPlugin extends CordovaPlugin {
 
-	private static Activity activity;
-	private static CallbackContext interstitialCallbackContextRef;
-	private static CallbackContext bannerCallbackContextRef;
-	private static ASAdViewWrapper banner;
+    private static Activity activity;
+    private static CallbackContext interstitialCallbackContextRef;
+    private static CallbackContext bannerCallbackContextRef;
+    private static ASAdViewWrapper banner;
+    private static AerServInterstitial asInterstitial = null;
+
+    private static HashMap<AerServEvent, String> callbackFunctionNameMap =
+            new HashMap<AerServEvent, String>();
+
+    static {
+        callbackFunctionNameMap.put(AerServEvent.PRELOAD_READY, "onPreloadReadyCallback");
+        callbackFunctionNameMap.put(AerServEvent.AD_LOADED, "onAdLoadedCallback");
+        callbackFunctionNameMap.put(AerServEvent.AD_FAILED, "onAdFailedCallback");
+        callbackFunctionNameMap.put(AerServEvent.AD_IMPRESSION, "onAdShownCallback");
+        callbackFunctionNameMap.put(AerServEvent.AD_CLICKED, "onAdClickedCallback");
+        callbackFunctionNameMap.put(AerServEvent.AD_DISMISSED, "onAdDismissedCallback");
+        callbackFunctionNameMap.put(AerServEvent.VC_READY, "onVcReadyCallback");
+        callbackFunctionNameMap.put(AerServEvent.VC_REWARDED, "onVcRewardedCallback");
+    }
+
+    private static AerServEventListener interstitialEventListener = new AerServEventListener() {
+        @Override
+        public void onAerServEvent(AerServEvent event, List<Object> eventArgs) {
+            Log.d("AerServSDKPhoneGapPlugin", event.name());
+
+            if (event == AerServEvent.AD_FAILED) {
+                // Get error message, if there is one
+                String message = "";
+                if (eventArgs != null && eventArgs.size() > 0 && eventArgs.get(0) != null) {
+                    message = eventArgs.get(0).toString();
+                }
+
+                sendPluginResult(interstitialCallbackContextRef, callbackFunctionNameMap.get(event),
+                        PluginResult.Status.OK, message);
+            } else if (event == AerServEvent.VC_READY || event == AerServEvent.VC_REWARDED) {
+                // Get VC name and amount, if they are available
+                String vcName = "";
+                BigDecimal vcAmount = BigDecimal.ZERO;
+                if (eventArgs != null
+                        && eventArgs.size() > 0
+                        && eventArgs.get(0) != null
+                        && eventArgs.get(0) instanceof AerServVirtualCurrency) {
+                    AerServVirtualCurrency vc = (AerServVirtualCurrency) eventArgs.get(0);
+                    vcName = vc.getName();
+                    vcAmount = vc.getAmount();
+                }
+
+                sendPluginResult(interstitialCallbackContextRef, callbackFunctionNameMap.get(event),
+                        PluginResult.Status.OK, vcName, vcAmount);
+            } else if (callbackFunctionNameMap.get(event) != null) {
+                // No-argument event
+                sendPluginResult(interstitialCallbackContextRef, callbackFunctionNameMap.get(event),
+                        PluginResult.Status.OK);
+            }
+        }
+    };
+
+    private static AerServEventListener bannerEventListener = new AerServEventListener() {
+        @Override
+        public void onAerServEvent(AerServEvent event, List<Object> eventArgs) {
+            Log.d("AerServSDKPhoneGapPlugin", event.name());
+
+            if (event == AerServEvent.AD_FAILED) {
+                // Get error message, if there is one
+                String message = "";
+                if (eventArgs != null && eventArgs.size() > 0 && eventArgs.get(0) != null) {
+                    message = eventArgs.get(0).toString();
+                }
+
+                sendPluginResult(bannerCallbackContextRef, callbackFunctionNameMap.get(event),
+                        PluginResult.Status.OK, message);
+            } else if (event == AerServEvent.VC_READY || event == AerServEvent.VC_REWARDED) {
+                // Get VC name and amount, if they are available
+                String vcName = "";
+                BigDecimal vcAmount = BigDecimal.ZERO;
+                if (eventArgs != null
+                        && eventArgs.size() > 0
+                        && eventArgs.get(0) != null
+                        && eventArgs.get(0) instanceof AerServVirtualCurrency) {
+                    AerServVirtualCurrency vc = (AerServVirtualCurrency) eventArgs.get(0);
+                    vcName = vc.getName();
+                    vcAmount = vc.getAmount();
+                }
+
+                sendPluginResult(bannerCallbackContextRef, callbackFunctionNameMap.get(event),
+                        PluginResult.Status.OK, vcName, vcAmount);
+            } else if (callbackFunctionNameMap.get(event) != null) {
+                // No-argument event
+                sendPluginResult(bannerCallbackContextRef, callbackFunctionNameMap.get(event),
+                        PluginResult.Status.OK);
+            }
+        }
+    };
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        //nothing to init
+    }
+
+    @Override
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+        activity = (Activity)super.cordova.getActivity();
+
+        Log.i("AerServSDKPhoneGapPlugin", "using action: " + action);
 
-	@Override
-	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-		super.initialize(cordova, webView);
-		//nothing to init
-	}
+        if (action.equals("loadInterstitial")) {
+            interstitialCallbackContextRef = callbackContext;
+            loadInterstitial(args.getString(0), args.getString(1), false);
+            return true;
+        } else if (action.equals("preloadInterstitial")) {
+            interstitialCallbackContextRef = callbackContext;
+            loadInterstitial(args.getString(0), args.getString(1), true);
+            return true;
+        } else if (action.equals("loadBanner")) {
 
-	@Override
-	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+            bannerCallbackContextRef = callbackContext;
+            loadBanner(args.getString(0), args.getInt(1), args.getInt(2), args.getInt(3), args.getString(4));
 
-		activity = (Activity)super.cordova;
+            return true;
 
-		Log.i("AerServSDKPhoneGapPlugin", "using action: " + action);
+        }	else if (action.equals("killBanner")) {
 
-		if (action.equals("loadInterstitial")) {
-			
-			interstitialCallbackContextRef = callbackContext;
-			loadInterstitial(args.getString(0), args.getString(1));
+            killBanner();
 
-			return true;
-		} else if (action.equals("loadBanner")) {
+            return true;
 
-			bannerCallbackContextRef = callbackContext;
-			loadBanner(args.getString(0), args.getInt(1), args.getInt(2), args.getInt(3), args.getString(4));
-		
-			return true;
+        } else if (action.equals("showInterstitial")) {
+            showInterstitial();
+            return true;
+        }
 
-		}	else if (action.equals("killBanner")) {
+        return false;  // Returning false results in a "MethodNotFound" error.
+    }
 
-			killBanner();
-		
-			return true;
+    public static void loadInterstitial(String plc, String keyWords, boolean preload) {
+        Log.i("AerServSDKPhoneGapPlugin", "using : " + plc);
 
-		}
+        AerServConfig config = new AerServConfig(activity, plc);
+        config.setEventListener(interstitialEventListener);
 
-		return false;  // Returning false results in a "MethodNotFound" error.
-	}
+        if(!keyWords.equals("")) {
 
+            Log.i("AerServSDKPhoneGapPlugin", "using keyWords: " + keyWords);
+            config.setKeywords(new ArrayList<String>(Arrays.asList(keyWords.split(","))));
+        }
 
-	public static void loadInterstitial(String plc, String keyWords) {
+        config.setPreload(preload);
+        asInterstitial = new AerServInterstitial(config);
+        if (!preload) {
+            asInterstitial.show();
+        }
+    }
 
-		Log.i("AerServSDKPhoneGapPlugin", "using : " + plc);
+    public static void showInterstitial() {
+        if (asInterstitial != null) {
+            asInterstitial.show();
+        }
+    }
 
-		final ASInterstitial asInterstitial = new ASInterstitial(activity, plc, false);
+    public static void loadBanner(String plc, int width, int height, int position, String keyWords) {
+        Log.i("AerServSDKPhoneGapPlugin", "using : " + plc);
 
+        AerServConfig config = new AerServConfig(activity, plc);
 
-		if(!keyWords.equals("")) {
-		 
-			Log.i("AerServSDKPhoneGapPlugin", "using keyWords: " + keyWords);
-			asInterstitial.setKeyWords(new ArrayList<String>(Arrays.asList(keyWords.split(","))));
-		}
+        Log.i("AerServSDKPhoneGapPlugin", "banner is: " + keyWords);
+        if(!keyWords.equals("")) {
 
-		asInterstitial.setAdListener(new ASAdListener() {
+            Log.i("AerServSDKPhoneGapPlugin", "using keyWords: " + keyWords);
+            config.setKeywords(new ArrayList<String>(Arrays.asList(keyWords.split(","))));
+        }
 
-			@Override
-			public void onAdLoaded() {
+        config.setEventListener(bannerEventListener);
 
-				JSONArray args = new JSONArray();
-				args.put("onAdLoadedCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				interstitialCallbackContextRef.sendPluginResult(result);
+        if(banner == null)
+            banner = new ASAdViewWrapper(activity, config, width, height, position);
+        else {
+            banner.kill();
+            banner = new ASAdViewWrapper(activity, config, width, height, position);
+        }
+        banner.loadAd();
+    }
 
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Loaded");
-			}
+    private static void sendPluginResult(CallbackContext callbackContext,
+            String callbackFunctionName, PluginResult.Status status, Object... params) {
+        JSONArray args = new JSONArray();
+        args.put(callbackFunctionName);
+        for (Object param : params) {
+            args.put(param);
+        }
+        PluginResult result = new PluginResult(status, args);
+        result.setKeepCallback(true);
+        callbackContext.sendPluginResult(result);
+    }
 
-			@Override
-			public void onAdFailed(final String message) {
+    public static void killBanner() {
 
-				JSONArray args = new JSONArray();
-				args.put("onAdFailedCallback");
-				args.put(message);
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
+        if(banner != null) {
 
-				Log.i("AerServSDKPhoneGapPlugin", "callbackContext is: " + interstitialCallbackContextRef);
-				interstitialCallbackContextRef.sendPluginResult(result);
+            banner.kill();
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            bannerCallbackContextRef.sendPluginResult(result);
 
 
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Failed: " + message);
-			}
+        } else {
+            Log.e("killBanner", "Could not find banner to kill.  Are you sure you have one?");
+        }
 
-			@Override
-			public void onAdShown() {
+    }
 
-				JSONArray args = new JSONArray();
-				args.put("onAdShownCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				interstitialCallbackContextRef.sendPluginResult(result);
+    public static void pauseBanner() {
 
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Shown");
-			}
+        if(banner != null) {
 
-			@Override
-			public void onAdClicked() {
+            banner.pause();
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            bannerCallbackContextRef.sendPluginResult(result);
 
-				JSONArray args = new JSONArray();
-				args.put("onAdClickedCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				interstitialCallbackContextRef.sendPluginResult(result);
 
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Clicked");
-			}
+        } else {
+            Log.e("killBanner", "Could not find banner to pause.  Are you sure you have one?");
+        }
 
-			@Override
-			public void onAdDismissed() {
+    }
 
-				JSONArray args = new JSONArray();
-				args.put("onAdDismissedCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				interstitialCallbackContextRef.sendPluginResult(result);
+    public static void playBanner() {
 
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Dismissed");
-			}
+        if(banner != null) {
 
-		});
+            banner.play();
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            bannerCallbackContextRef.sendPluginResult(result);
 
-		asInterstitial.loadAd();
+        } else {
+            Log.e("killBanner", "Could not find banner to play.  Are you sure you have one?");
+        }
 
-	}
-
-	public static void loadBanner(String plc, int width, int height, int position, String keyWords) {
-
-		Log.i("AerServSDKPhoneGapPlugin", "using : " + plc);
-
-		if(banner == null)
-			banner = new ASAdViewWrapper(activity, plc, width, height, position);
-		else {
-			banner.kill();
-			banner = new ASAdViewWrapper(activity, plc, width, height, position);
-		}
-
-		Log.i("AerServSDKPhoneGapPlugin", "banner is: " + keyWords);
-		if(!keyWords.equals("")) {
-		 
-			Log.i("AerServSDKPhoneGapPlugin", "using keyWords: " + keyWords);
-			banner.setKeyWords(new ArrayList<String>(Arrays.asList(keyWords.split(","))));
-		}
-
-		banner.setAdListener(new ASAdListener() {
-
-			@Override
-			public void onAdLoaded() {
-
-				JSONArray args = new JSONArray();
-				args.put("onAdLoadedCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				bannerCallbackContextRef.sendPluginResult(result);
-
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Loaded");
-			}
-
-			@Override
-			public void onAdFailed(final String message) {
-
-				JSONArray args = new JSONArray();
-				args.put("onAdFailedCallback");
-				args.put(message);
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				bannerCallbackContextRef.sendPluginResult(result);
-
-
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Failed: " + message);
-			}
-
-			@Override
-			public void onAdShown() {
-
-				JSONArray args = new JSONArray();
-				args.put("onAdShownCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				bannerCallbackContextRef.sendPluginResult(result);
-
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Shown");
-			}
-
-			@Override
-			public void onAdClicked() {
-
-				JSONArray args = new JSONArray();
-				args.put("onAdClickedCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				bannerCallbackContextRef.sendPluginResult(result);
-
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Clicked");
-			}
-
-			@Override
-			public void onAdDismissed() {
-
-				JSONArray args = new JSONArray();
-				args.put("onAdDismissedCallback");
-				args.put("");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, args);
-				result.setKeepCallback(true);
-				bannerCallbackContextRef.sendPluginResult(result);
-
-				Log.d("AerServSDKPhoneGapPlugin", "Interstitial Dismissed");
-			}
-
-		});
-
-		banner.loadAd();
-
-	}
-
-
-	public static void killBanner() {
-
-		if(banner != null) {
-
-			banner.kill();
-			PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-			result.setKeepCallback(true);
-			bannerCallbackContextRef.sendPluginResult(result);
-
-
-		} else {
-			Log.e("killBanner", "Could not find banner to kill.  Are you sure you have one?");
-		}
-
-	}
-
-	public static void pauseBanner() {
-
-		if(banner != null) {
-
-			banner.pause();
-			PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-			result.setKeepCallback(true);
-			bannerCallbackContextRef.sendPluginResult(result);
-
-
-		} else {
-			Log.e("killBanner", "Could not find banner to pause.  Are you sure you have one?");
-		}
-
-	}
-
-	public static void playBanner() {
-
-		if(banner != null) {
-
-			banner.play();
-			PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-			result.setKeepCallback(true);
-			bannerCallbackContextRef.sendPluginResult(result);
-
-		} else {
-			Log.e("killBanner", "Could not find banner to play.  Are you sure you have one?");
-		}
-
-	}
+    }
 }

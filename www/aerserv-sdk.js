@@ -31,12 +31,21 @@ AerServSDK.BANNER_BOTTOM = 1;
  * @param {function} onAdShownCallback - the callback function for when the ad has finished 
  * @param {function} onAdClickedCallback - the callback function for when the ad has been touched 
  * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed 
- * @param {string} keyWords - comma seperated string of keywords to filter ads with 
+ * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
+ * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
+ * @param {string} keyWords - comma seperated string of keywords to filter ads with
  *
  */
-AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallback, onAdShownCallback,
-	 																	  onAdClickedCallback, onAdDismissedCallback, keyWords) {
-
+AerServSDK.loadInterstitial = function(
+        plc,
+        onAdLoadedCallback,
+        onAdFailedCallback,
+        onAdShownCallback,
+        onAdClickedCallback,
+        onAdDismissedCallback,
+        onVcReadyCallback,
+        onVcRewardedCallback,
+        keyWords) {
 	if(keyWords == null)
 				keyWords = "";
 
@@ -45,14 +54,17 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
 	this.onAdShownCallback = onAdShownCallback;
 	this.onAdClickedCallback = onAdClickedCallback;
 	this.onAdDismissedCallback = onAdDismissedCallback;
+	this.onVcReadyCallback = onVcReadyCallback;
+	this.onVcRewardedCallback = onVcRewardedCallback;
 
 	self = this;
-	
+
 	cordova.exec(function(winParams){
 
 								console.log(winParams[0]);
 								console.log(winParams[1]);
-								self[winParams[0]](winParams[1]);
+								console.log(winParams[2]);
+								self[winParams[0]](winParams[1], winParams[2]);
 
 							},
 							function(error){
@@ -64,8 +76,79 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
 							[plc, keyWords]
 
 			);
+}
+
+/**
+ * preloadInterstitial will preload a full screen ad but will NOT show it.  You must
+ * listen for onPreloadReadyCallback event, and call showInterstitial() to display the preloaded ad.
+ *
+ * @param {string} plc - the placement
+ * @param {function} onAdLoadedCallback - the callback function for when the ad is loaded
+ * @param {function} onAdFailedCallback - the callback function for when the ad has failed to load
+ * @param {function} onAdShownCallback - the callback function for when the ad has finished
+ * @param {function} onAdClickedCallback - the callback function for when the ad has been touched
+ * @param {function} onPreloadReadyCallback - the callback function for when ad is preloaded
+ * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
+ * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
+ * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed
+ * @param {string} keyWords - comma seperated string of keywords to filter ads with
+ *
+ */
+AerServSDK.preloadInterstitial = function(
+        plc,
+        onAdLoadedCallback,
+        onAdFailedCallback,
+        onAdShownCallback,
+        onAdClickedCallback,
+        onAdDismissedCallback,
+        onPreloadReadyCallback,
+        onVcReadyCallback,
+        onVcRewardedCallback,
+        keyWords) {
+
+	if(keyWords == null)
+				keyWords = "";
+
+	this.onAdLoadedCallback = onAdLoadedCallback;
+	this.onAdFailedCallback = onAdFailedCallback;
+	this.onAdShownCallback = onAdShownCallback;
+	this.onAdClickedCallback = onAdClickedCallback;
+	this.onAdDismissedCallback = onAdDismissedCallback;
+	this.onPreloadReadyCallback = onPreloadReadyCallback;
+	this.onVcReadyCallback = onVcReadyCallback;
+	this.onVcRewardedCallback = onVcRewardedCallback;
+
+	self = this;
+
+	cordova.exec(function(winParams){
+
+								console.log(winParams[0]);
+								console.log(winParams[1]);
+								console.log(winParams[2]);
+								self[winParams[0]](winParams[1], winParams[2]);
+
+							},
+							function(error){
 
 
+							},
+							"AerServSDKPhoneGapPlugin",
+							"preloadInterstitial",
+							[plc, keyWords]
+
+			);
+
+
+}
+
+AerServSDK.showInterstitial = function() {
+	cordova.exec(
+		function(winParams) {},
+		function(error) {},
+		"AerServSDKPhoneGapPlugin",
+		"showInterstitial",
+		[]
+	);
 }
 
 /**
@@ -79,12 +162,24 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
  * @param {function} onAdShownCallback - the callback function for when the ad has finished 
  * @param {function} onAdClickedCallback - the callback function for when the ad has been touched 
  * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed 
- * @param {string} keyWords - comma seperated string of keywords to filter ads with 
+ * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
+ * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
+ * @param {string} keyWords - comma seperated string of keywords to filter ads with
  *
  */
-AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallback, onAdFailedCallback, onAdShownCallback,
-																 onAdClickedCallback, onAdDismissedCallback, keyWords) {
-
+AerServSDK.loadBanner = function(
+        plc,
+        width,
+        height,
+        position,
+        onAdLoadedCallback,
+        onAdFailedCallback,
+        onAdShownCallback,
+        onAdClickedCallback,
+        onAdDismissedCallback,
+        onVcReadyCallback,
+        onVcRewardedCallback,
+        keyWords) {
 	if(keyWords == null)
 				keyWords = "";
 
@@ -93,14 +188,17 @@ AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallbac
 	this.onAdShownCallback = onAdShownCallback;
 	this.onAdClickedCallback = onAdClickedCallback;
 	this.onAdDismissedCallback = onAdDismissedCallback;
+	this.onVcReadyCallback = onVcReadyCallback;
+	this.onVcRewardedCallback = onVcRewardedCallback;
 
 	self = this;
-	
+
 	cordova.exec(function(winParams){
 
 								console.log(winParams[0]);
 								console.log(winParams[1]);
-								self[winParams[0]](winParams[1]);
+								console.log(winParams[2]);
+								self[winParams[0]](winParams[1], winParams[2]);
 
 							},
 							function(error){
@@ -112,8 +210,6 @@ AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallbac
 							[plc, width, height, position, keyWords]
 
 			);
-
-
 }
 
 /**
