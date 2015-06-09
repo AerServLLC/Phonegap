@@ -48,6 +48,9 @@
 					android:configChanges="keyboardHidden|orientation|screenSize"
 					android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
 
+				<meta-data android:name="com.google.android.gms.version"
+        				android:value="6587000" />
+
 				<activity android:name="com.google.android.gms.ads.AdActivity"
 					android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 
