@@ -37,17 +37,21 @@
 	self.interstitial_command =  command;
 	NSString* plc = [command.arguments objectAtIndex:0];
 	NSString* keyWords = [command.arguments objectAtIndex:1];
-	[self showInterstitial:plc keyWords:keyWords];
+    NSString* preloadStr = [command.arguments objectAtIndex:2];
+    [self showInterstitial:plc keyWords:keyWords preload:[preloadStr boolValue]];
 
 
 }
 
-- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords{
+- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords preload:(bool) preload {
 
-	self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
 
 
 	self.adController = [ASInterstitialViewController viewControllerForPlacementID:plc withDelegate:self];
+	if(preload) {
+		self.adController.isPreload = preload;
+	}
 
 	if([keyWords length] != 0) {
 
@@ -112,6 +116,29 @@
 	self.adController = nil;
 }
 
+- (void)interstitialViewControllerDidPreloadAd:(ASInterstitialViewController *)viewController {
+    NSLog(@"ad preloaded");
+    NSArray *args = @[@"onPreloadReadyCallback", @""];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.interstitial_command.callbackId];
+}
+
+- (void)interstitialViewControllerDidVirtualCurrencyLoad:(ASInterstitialViewController *)viewController vcData:(NSDictionary *)vcData {
+    NSLog(@"virtual currency loaded with name=%@ and rewardAmount=%@", vcData[@"name"], vcData[@"rewardAmount"]);
+    NSArray *args = @[@"onVcReadyCallback", vcData[@"name"], vcData[@"rewardAmount"]];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.interstitial_command.callbackId];
+}
+
+- (void)interstitialViewControllerDidVirtualCurrencyReward:(ASAdView *)adView vcData:(NSDictionary *)vcData {
+    NSLog(@"virtual currency rewarded with name=%@ and rewardAmount=%@", vcData[@"name"], vcData[@"rewardAmount"]);
+    NSArray *args = @[@"onVcRewardedCallback", vcData[@"name"], vcData[@"rewardAmount"]];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.interstitial_command.callbackId];
+}
 
 /** end of interstitial methods **/
 
@@ -132,7 +159,7 @@
 
 }
 
-- (void) showBanner:(NSString *) plc width:(int) width height:(int) height position:(int) position keyWords:(NSString *) keyWords{
+- (void) showBanner:(NSString *) plc width:(int) width height:(int) height position:(int) position keyWords:(NSString *) keyWords {
 
 	self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
 
@@ -236,6 +263,15 @@
 
 }
 
+-(void) adViewDidPreloadAd:(ASAdView *)adView {
+	NSLog(@"Banner Ad has preloaded");
+
+	NSArray *args = @[@"onPreloadReadyCallback", @""];
+	CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
+	[result setKeepCallbackAsBool:YES];
+	[self.commandDelegate sendPluginResult:result callbackId:self.interstitial_command.callbackId];
+}
+
 -(void) adViewDidFailToLoadAd:(ASAdView *)adView withError:(NSError *)error {
 
 	NSLog(@"ad Failed to load with error:%@", error);
@@ -256,6 +292,22 @@
 	CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
 	[result setKeepCallbackAsBool:YES]; 
 	[self.commandDelegate sendPluginResult:result callbackId:self.banner_command.callbackId];
+}
+
+- (void)adViewDidVirtualCurrencyLoad:(ASAdView *)adView vcData:(NSDictionary *)vcData {
+    NSLog(@"virtual currency loaded with name=%@ and rewardAmount=%@", vcData[@"name"], vcData[@"rewardAmount"]);
+    NSArray *args = @[@"onVcReadyCallback", vcData[@"name"], vcData[@"rewardAmount"]];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.banner_command.callbackId];
+}
+
+-(void) adViewDidVirtualCurrencyReward:(ASAdView *)adView vcData:(NSDictionary *)vcData {
+    NSLog(@"virtual currency rewarded with name=%@ and rewardAmount=%@", vcData[@"name"], vcData[@"rewardAmount"]);
+    NSArray *args = @[@"onVcRewardedCallback", vcData[@"name"], vcData[@"rewardAmount"]];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
+    [result setKeepCallbackAsBool:YES];
+    [self.commandDelegate sendPluginResult:result callbackId:self.banner_command.callbackId];
 }
 
 /** end of banner methods **/

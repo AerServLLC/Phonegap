@@ -31,10 +31,11 @@ AerServSDK.BANNER_BOTTOM = 1;
  * @param {function} onAdShownCallback - the callback function for when the ad has finished 
  * @param {function} onAdClickedCallback - the callback function for when the ad has been touched 
  * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed 
+ * @param {function} onPreloadReadyCallback - the callback function for when ad has been preloaded
  * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
  * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
  * @param {string} keyWords - comma seperated string of keywords to filter ads with
- *
+ * @param {bool} preload - boolean to enable preloading functionality
  */
 AerServSDK.loadInterstitial = function(
         plc,
@@ -43,9 +44,12 @@ AerServSDK.loadInterstitial = function(
         onAdShownCallback,
         onAdClickedCallback,
         onAdDismissedCallback,
+	onPreloadReadyCallback,
         onVcReadyCallback,
         onVcRewardedCallback,
-        keyWords) {
+        keyWords,
+		preload
+	) {
 	if(keyWords == null)
 				keyWords = "";
 
@@ -56,6 +60,7 @@ AerServSDK.loadInterstitial = function(
 	this.onAdDismissedCallback = onAdDismissedCallback;
 	this.onVcReadyCallback = onVcReadyCallback;
 	this.onVcRewardedCallback = onVcRewardedCallback;
+	this.onPreloadReadyCallback = onPreloadReadyCallback;
 
 	self = this;
 
@@ -73,72 +78,9 @@ AerServSDK.loadInterstitial = function(
 							},
 							"AerServSDKPhoneGapPlugin",
 							"loadInterstitial",
-							[plc, keyWords]
+							[plc, keyWords, preload]
 
 			);
-}
-
-/**
- * preloadInterstitial will preload a full screen ad but will NOT show it.  You must
- * listen for onPreloadReadyCallback event, and call showInterstitial() to display the preloaded ad.
- *
- * @param {string} plc - the placement
- * @param {function} onAdLoadedCallback - the callback function for when the ad is loaded
- * @param {function} onAdFailedCallback - the callback function for when the ad has failed to load
- * @param {function} onAdShownCallback - the callback function for when the ad has finished
- * @param {function} onAdClickedCallback - the callback function for when the ad has been touched
- * @param {function} onPreloadReadyCallback - the callback function for when ad is preloaded
- * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
- * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
- * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed
- * @param {string} keyWords - comma seperated string of keywords to filter ads with
- *
- */
-AerServSDK.preloadInterstitial = function(
-        plc,
-        onAdLoadedCallback,
-        onAdFailedCallback,
-        onAdShownCallback,
-        onAdClickedCallback,
-        onAdDismissedCallback,
-        onPreloadReadyCallback,
-        onVcReadyCallback,
-        onVcRewardedCallback,
-        keyWords) {
-
-	if(keyWords == null)
-				keyWords = "";
-
-	this.onAdLoadedCallback = onAdLoadedCallback;
-	this.onAdFailedCallback = onAdFailedCallback;
-	this.onAdShownCallback = onAdShownCallback;
-	this.onAdClickedCallback = onAdClickedCallback;
-	this.onAdDismissedCallback = onAdDismissedCallback;
-	this.onPreloadReadyCallback = onPreloadReadyCallback;
-	this.onVcReadyCallback = onVcReadyCallback;
-	this.onVcRewardedCallback = onVcRewardedCallback;
-
-	self = this;
-
-	cordova.exec(function(winParams){
-
-								console.log(winParams[0]);
-								console.log(winParams[1]);
-								console.log(winParams[2]);
-								self[winParams[0]](winParams[1], winParams[2]);
-
-							},
-							function(error){
-
-
-							},
-							"AerServSDKPhoneGapPlugin",
-							"preloadInterstitial",
-							[plc, keyWords]
-
-			);
-
-
 }
 
 AerServSDK.showInterstitial = function() {
@@ -165,7 +107,6 @@ AerServSDK.showInterstitial = function() {
  * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
  * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
  * @param {string} keyWords - comma seperated string of keywords to filter ads with
- *
  */
 AerServSDK.loadBanner = function(
         plc,
@@ -179,7 +120,8 @@ AerServSDK.loadBanner = function(
         onAdDismissedCallback,
         onVcReadyCallback,
         onVcRewardedCallback,
-        keyWords) {
+        keyWords
+	) {
 	if(keyWords == null)
 				keyWords = "";
 

@@ -147,11 +147,7 @@ public class AerServSDKPhoneGapPlugin extends CordovaPlugin {
 
         if (action.equals("loadInterstitial")) {
             interstitialCallbackContextRef = callbackContext;
-            loadInterstitial(args.getString(0), args.getString(1), false);
-            return true;
-        } else if (action.equals("preloadInterstitial")) {
-            interstitialCallbackContextRef = callbackContext;
-            loadInterstitial(args.getString(0), args.getString(1), true);
+            loadInterstitial(args.getString(0), args.getString(1), args.getBoolean(2));
             return true;
         } else if (action.equals("loadBanner")) {
 

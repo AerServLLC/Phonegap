@@ -75,7 +75,7 @@
         </config-file>
 				<header-file src="src/ios/AerServSDKPhoneGapPlugin.h" target-dir="AerServSDK"/>
 				<source-file src="src/ios/AerServSDKPhoneGapPlugin.m" target-dir="AerServSDK"/>
-				<framework src="src/ios/Frameworks/AerServSDKMin.framework" custom="true"/>
+				<framework src="src/ios/Frameworks/AerServSDK.framework" custom="true"/>
 				<framework src="Social.framework" />
 				<framework src="Twitter.framework" />
 				<framework src="MapKit.framework" />
