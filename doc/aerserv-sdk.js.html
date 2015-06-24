@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>JSDoc: Source: aerserv-sdk.js</title>
-    
+
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
@@ -16,16 +16,17 @@
 <body>
 
 <div id="main">
-    
+
     <h1 class="page-title">Source: aerserv-sdk.js</h1>
+
     
-    
+
 
 
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>/* Copyright (c) AerServ, 2015
+            <pre class="prettyprint source linenums"><code>/* Copyright (c) AerServ, 2015
  *
  * This unpublished material is proprietary to AerServ, LLC.
  * All rights reserved. The methods and
@@ -58,12 +59,25 @@ AerServSDK.BANNER_BOTTOM = 1;
  * @param {function} onAdShownCallback - the callback function for when the ad has finished 
  * @param {function} onAdClickedCallback - the callback function for when the ad has been touched 
  * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed 
- * @param {string} keyWords - comma seperated string of keywords to filter ads with 
- *
+ * @param {function} onPreloadReadyCallback - the callback function for when ad has been preloaded
+ * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
+ * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
+ * @param {string} keyWords - comma seperated string of keywords to filter ads with
+ * @param {bool} preload - boolean to enable preloading functionality
  */
-AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallback, onAdShownCallback,
-	 																	  onAdClickedCallback, onAdDismissedCallback, keyWords) {
-
+AerServSDK.loadInterstitial = function(
+        plc,
+        onAdLoadedCallback,
+        onAdFailedCallback,
+        onAdShownCallback,
+        onAdClickedCallback,
+        onAdDismissedCallback,
+	onPreloadReadyCallback,
+        onVcReadyCallback,
+        onVcRewardedCallback,
+        keyWords,
+		preload
+	) {
 	if(keyWords == null)
 				keyWords = "";
 
@@ -72,14 +86,18 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
 	this.onAdShownCallback = onAdShownCallback;
 	this.onAdClickedCallback = onAdClickedCallback;
 	this.onAdDismissedCallback = onAdDismissedCallback;
+	this.onVcReadyCallback = onVcReadyCallback;
+	this.onVcRewardedCallback = onVcRewardedCallback;
+	this.onPreloadReadyCallback = onPreloadReadyCallback;
 
 	self = this;
-	
+
 	cordova.exec(function(winParams){
 
 								console.log(winParams[0]);
 								console.log(winParams[1]);
-								self[winParams[0]](winParams[1]);
+								console.log(winParams[2]);
+								self[winParams[0]](winParams[1], winParams[2]);
 
 							},
 							function(error){
@@ -88,11 +106,19 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
 							},
 							"AerServSDKPhoneGapPlugin",
 							"loadInterstitial",
-							[plc, keyWords]
+							[plc, keyWords, preload]
 
 			);
+}
 
-
+AerServSDK.showInterstitial = function() {
+	cordova.exec(
+		function(winParams) {},
+		function(error) {},
+		"AerServSDKPhoneGapPlugin",
+		"showInterstitial",
+		[]
+	);
 }
 
 /**
@@ -106,12 +132,24 @@ AerServSDK.loadInterstitial = function(plc, onAdLoadedCallback, onAdFailedCallba
  * @param {function} onAdShownCallback - the callback function for when the ad has finished 
  * @param {function} onAdClickedCallback - the callback function for when the ad has been touched 
  * @param {function} onAdDismissedCallback - the callback function for when the ad has been dismissed 
- * @param {string} keyWords - comma seperated string of keywords to filter ads with 
- *
+ * @param {function} onVcReadyCallback - the callback function for when virtual currency is ready
+ * @param {function} onVcRewardedCallback - the callback function for when virtual currency is rewarded
+ * @param {string} keyWords - comma seperated string of keywords to filter ads with
  */
-AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallback, onAdFailedCallback, onAdShownCallback,
-																 onAdClickedCallback, onAdDismissedCallback, keyWords) {
-
+AerServSDK.loadBanner = function(
+        plc,
+        width,
+        height,
+        position,
+        onAdLoadedCallback,
+        onAdFailedCallback,
+        onAdShownCallback,
+        onAdClickedCallback,
+        onAdDismissedCallback,
+        onVcReadyCallback,
+        onVcRewardedCallback,
+        keyWords
+	) {
 	if(keyWords == null)
 				keyWords = "";
 
@@ -120,14 +158,17 @@ AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallbac
 	this.onAdShownCallback = onAdShownCallback;
 	this.onAdClickedCallback = onAdClickedCallback;
 	this.onAdDismissedCallback = onAdDismissedCallback;
+	this.onVcReadyCallback = onVcReadyCallback;
+	this.onVcRewardedCallback = onVcRewardedCallback;
 
 	self = this;
-	
+
 	cordova.exec(function(winParams){
 
 								console.log(winParams[0]);
 								console.log(winParams[1]);
-								self[winParams[0]](winParams[1]);
+								console.log(winParams[2]);
+								self[winParams[0]](winParams[1], winParams[2]);
 
 							},
 							function(error){
@@ -139,8 +180,6 @@ AerServSDK.loadBanner = function(plc, width, height, position, onAdLoadedCallbac
 							[plc, width, height, position, keyWords]
 
 			);
-
-
 }
 
 /**
@@ -178,13 +217,13 @@ module.exports = AerServSDK;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="AerServSDK.html">AerServSDK</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AerServSDK.html">AerServSDK</a></li></ul>
 </nav>
 
-<br clear="both">
+<br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Jan 20 2015 11:28:24 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Jun 24 2015 16:46:58 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>
