@@ -105,20 +105,20 @@ extern const CGSize ASWideSkypscraperSize;
  * @param size the desired ad size.
  * @return the view the ad will be placed in.
  */
--(id) initWithPlacementID:(NSString*)placementID size:(CGSize)size;
+- (instancetype)initWithPlacementID:(NSString*)placementID size:(CGSize)size;
 
 /*!
  * Requests a new ad from the server. If an ad is already loading
  * this call will be ignored. You can use 'forceRefreshAd' to force cancle
  * any existing ad requests and force a new ad to load.
  */
--(void) loadAd;
+- (void)loadAd;
 
 
 /*!
  * Cancels any exiting ad requests and requests a new ad from the server.
  */
--(void) forceRefreshAd;
+- (void)forceRefreshAd;
 
 /*!
  * Returns the size of the actual ad that was fetched. 
@@ -129,7 +129,7 @@ extern const CGSize ASWideSkypscraperSize;
  * 
  * @return The size of the underlying mediated ad.
  */
--(CGSize) adContentSize;
+- (CGSize)adContentSize;
 
 /*!
  * Turns off auto refreshing the banner ad.
@@ -139,7 +139,7 @@ extern const CGSize ASWideSkypscraperSize;
  * to re start the auto refresh.
 *
  */
--(void) stopAutomaticallyRefreshingContents;
+- (void)stopAutomaticallyRefreshingContents;
 
 /*!
  * Turns on auto refreshing the banner ad.
@@ -147,7 +147,7 @@ extern const CGSize ASWideSkypscraperSize;
  * This turns on the auto refresh for banner ads. To disable you can
  * call stopAutomaticallyRefreshingConetnts.
  */
--(void) startAutomaticallyRefreshingContents;
+- (void)startAutomaticallyRefreshingContents;
 
 /*!
  * rotateToOrientation
@@ -157,10 +157,31 @@ extern const CGSize ASWideSkypscraperSize;
  *
  * @param newOrientation - the devices current orientation.
  */
--(void) rotateToOrientation:(UIInterfaceOrientation)newOrientation;
+- (void)rotateToOrientation:(UIInterfaceOrientation)newOrientation;
 
--(void) play;
--(void) pause;
+
+/*!
+ * play, pause
+ * 
+ * Call this for video playback control.
+ */
+- (void)play;
+- (void)pause;
+
+/*!
+ * showPreloadedBanner
+ *
+ * Call this after your banner has preloaded to display the ad.
+*/
+- (void)showPreloadedBanner;
+
+/*!
+ * cancel
+ *
+ * Call this if you want to cancel the ad load attempt during a preload.
+ */
+- (void)cancel;
+
 
 @end
 /*!
@@ -192,11 +213,10 @@ extern const CGSize ASWideSkypscraperSize;
  */
 - (void)adViewDidFailToLoadAd:(ASAdView *)adView withError:(NSError *)error;
 
-
 /*!
  * This called when the ad has preloaded
  *
- * @param adView - The ad that preloaded.
+ * @param adView - The ad that preloaded. Must implement for preload functionality.
  */
 - (void)adViewDidPreloadAd:(ASAdView *)adView;
 
@@ -220,7 +240,14 @@ extern const CGSize ASWideSkypscraperSize;
  *
  * @param adView - The ad that was clicked.
  */
-- (void) willLeaveApplicatonFromAd:(ASAdView *)adView;
+- (void)willLeaveApplicatonFromAd:(ASAdView *)adView;
+
+/*!
+ * This is called when a vast video has completed playing
+ *
+ * @param adView - The ad that completed showing
+ */
+- (void)adViewDidCompletePlayingWithVastAd:(ASAdView *)adView;
 
 /*!
  * This is called when the size of the ad changes. For example a VAST ad that a playlist with
@@ -228,14 +255,14 @@ extern const CGSize ASWideSkypscraperSize;
  *
  * @param adView - The ad that was clicked.
  */
-- (void) adSizedChanged:(ASAdView *)adView;
+- (void)adSizedChanged:(ASAdView *)adView;
 
 /*!
  * This is called when the ad is clicked on.
  *
  * @param adView - The ad that was clicked.
  */
-- (void) adWasClicked:(ASAdView *)adView;
+- (void)adWasClicked:(ASAdView *)adView;
 
 
 @end

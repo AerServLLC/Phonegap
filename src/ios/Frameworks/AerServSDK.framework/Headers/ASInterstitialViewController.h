@@ -110,6 +110,13 @@
 - (void)interstitialViewControllerAdLoadedSuccessfully:(ASInterstitialViewController *)viewController;
 
 /*!
+ * This called when the ad has preloaded
+ *
+ * @param viewController - The view controller with an ad preloaded.
+ */
+- (void)interstitialViewControllerDidPreloadAd:(ASInterstitialViewController *)viewController;
+
+/*!
  * Called when the ad failed has failed to load.
  * 
  * @param viewController The view controller that attempted to load the ad.
@@ -162,27 +169,20 @@
 - (void)interstitialViewControllerAdWasTouched:(ASInterstitialViewController *)viewController;
 
 /*!
- * This called when the ad has preloaded
- *
- * @param adView - The ad that preloaded.
- */
-- (void)adViewDidPreloadAd:(ASInterstitialViewController *)viewController;
-
-/*!
  * This called when an ad with a virtual currency reward has loaded
  *
- * @param adView - The ad that loaded with virtual currency enabled.
+ * @param viewController - The view controller wtih an ad loaded that has virtual currency enabled.
  * @param vcData - A dictionary containing the virtual currency data; contains "name" and "rewardAmount" keys
  */
-- (void)adViewDidVirtualCurrencyLoad:(ASInterstitialViewController *)viewController vcData:(NSDictionary *)vcData;
+- (void)interstitialViewControllerDidVirtualCurrencyLoad:(ASInterstitialViewController *)viewController vcData:(NSDictionary *)vcData;
 
 /*!
  * This called when an ad with a virtual currency reward has been rewarded
  *
- * @param adView - The ad that completed with virtual currency being rewarded
+ * @param viewController - The view controller with an ad that completed rewarding virtual currency
  * @param vcData - A dictionary containing the virtual currency data; contains "name" and "rewardAmount" keys
  */
-- (void)adViewDidVirtualCurrencyReward:(ASInterstitialViewController *)viewController vcData:(NSDictionary *)vcData;
+- (void)interstitialViewControllerDidVirtualCurrencyReward:(ASInterstitialViewController *)viewController vcData:(NSDictionary *)vcData;
 
 
 @end
