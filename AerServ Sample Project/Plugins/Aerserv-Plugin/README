@@ -1,0 +1,17 @@
+prereq:
+
+1.  cordova cli to create app as described @ http://cordova.apache.org/docs/en/4.0.0/guide_cli_index.md.html
+2.  ios-deploy (for sample app) https://github.com/phonegap/ios-deploy
+
+supported aerserv sdk:
+
+*ios - 2.25.2
+*android - 2.27.1.1
+
+instructions:
+
+1.  use 'cordova platform add android' and 'cordova platform add ios' to add the platforms to your project
+2.  use 'cordova plugin add https://bitbucket.org/aerservllc/android-sdk-phonegap-plugin-min.git' command to install aerserv-sdk plugin
+3.  see jsdoc in ./doc/
+4.  see sample app for reference
+
