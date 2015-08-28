@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head>
+        <meta charset="utf-8">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>AerServSDKCordova</title>
+    </head>
+    <body>
+        <div class="app">
+						<input type="text" id="plc" placeholder="Enter PLC, e.g. 1000741" value="">
+            <br>
+            <br>
+            <button type="button" onclick="loadInterstitial()">Load and Show Interstitial</button>
+            <br>
+            <br>
+            <button type="button" onclick="preloadInterstitial()">Preaload Interstitial</button>
+            <br>
+            <br>
+            <button type="button" onclick="loadInterstitial()">Show Interstitial</button>
+						<br>
+						<br>
+            <button type="button" onclick="loadBanner()">Show Banner</button>
+						<br>
+						<br>
+            <button type="button" onclick="killBanner()">Kill Banner</button>
+						<br>
+						<br>
+						<div width="100%" id="status" style="text-align: left;">
+
+        </div>
+				
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/sample-app.js"></script>
+    
+
+</div></body></html>
