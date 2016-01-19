@@ -6,7 +6,7 @@ prereq:
 supported aerserv sdk:
 
 *ios - 2.25.2
-*android - 2.28
+*android - 2.32.0
 
 instructions:
 
