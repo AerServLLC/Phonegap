@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "ASConstants.h"
 
 @protocol ASInterstitialViewControllerDelegate;
 
@@ -30,11 +31,12 @@
 /*! Returns if the ad is ready to be displayed or not*/
 @property (readonly, nonatomic, assign) BOOL isReady;
 
-/*! A flag that tells the app to point to a live or staging server.
+/*! A flag that defines the environment that the adserver requests are sent to.
+ * kASEnvProduction, kASEnvStaging are the recommended choices for this flag.
  *
- * Remember to set this to FALSE before production builds.
+ * Remember to set this to kASEnvProduction before production builds!!!
  */
-@property (nonatomic, assign) BOOL isTesting;
+@property (nonatomic, assign) ASEnvironmentType env;
 
 /*!
  * If set to YES the ads are in preload mode and will attempt to preload when loadAd is called
@@ -42,11 +44,18 @@
 @property (nonatomic, assign) BOOL isPreload;
 
 /*!
- * An optional seet of keywords that should be passe to the ad server to recieve
+ * An optional set of keywords that should be passed to the ad server to recieve
  * more relevant advertising.
  *
  */
 @property (nonatomic, strong) NSArray* keyWords;
+
+/*!
+ * An optional set of publisher keys that should be passed to the ad server to recieve
+ * more relevant advertising.
+ *
+ */
+@property (nonatomic, strong) NSDictionary* pubKeys;
 
 /*!
  * If set to YES the ads are outlined in red. Remember to set
@@ -56,9 +65,16 @@
 
 /*!
  * The number of seconds before loading the ad should timeout.
- * Ad will send intersitialViewControllerAdFailedToLoad:withError: message on timeout.
+ * Ad will send interstitialViewControllerAdFailedToLoad:withError: message on timeout.
+ * Defaults to 15 seconds.
  */
 @property (nonatomic, assign) NSTimeInterval timeoutInterval;
+
+/*!
+ * When set to YES will invoke a location services authorization request
+ * if the location services authorization is undetermined. Default is NO.
+ */
+@property (nonatomic, assign) BOOL locationServicesEnabled;
 
 /*!
  * Returns an interstitial ad for the given ID.
@@ -71,7 +87,7 @@
  *
  * @param placementID An ID that identifies the placement to show.
  */
-+(instancetype) viewControllerForPlacementID:(NSString*)placementID withDelegate:(id<ASInterstitialViewControllerDelegate>)delegate;
+- (instancetype)viewControllerForPlacementID:(NSString*)placementID withDelegate:(id<ASInterstitialViewControllerDelegate>)delegate;
 
 /*!
  * Begins loading the ad from the server.
@@ -81,7 +97,7 @@
  * an ad.
  *
  */
--(void) loadAd;
+- (void)loadAd;
 
 
 /*!
@@ -90,10 +106,15 @@
  * If there is no ad to display the user will be presented with a spinner until the ad
  * loads.
  */
--(void) showFromViewController:(UIViewController*)parentViewController;
+- (void)showFromViewController:(UIViewController*)parentViewController;
 
-- (void) pause;
-- (void) play;
+/*!
+ * play, pause
+ *
+ * Controls for the media player.
+ */
+- (void)play;
+- (void)pause;
 
 @end
 
@@ -102,43 +123,51 @@
  */
 @protocol ASInterstitialViewControllerDelegate<NSObject>
 
+@optional
+
 /*!
- * Called when the ad has loaded successfuly. 
+ * Called when the ad has loaded successfuly without preload. 
  * 
  * @param viewController The view controller that the ad is displayed on.
  */
 - (void)interstitialViewControllerAdLoadedSuccessfully:(ASInterstitialViewController *)viewController;
 
 /*!
- * This called when the ad has preloaded
+ * Called when the ad has preloaded and is ready to be shown.
  *
- * @param viewController - The view controller with an ad preloaded.
+ * @param viewController - The view controller with an ad preloaded, needs to be implemented for preload case.
  */
 - (void)interstitialViewControllerDidPreloadAd:(ASInterstitialViewController *)viewController;
 
+
 /*!
  * Called when the ad failed has failed to load.
- * 
+ *
  * @param viewController The view controller that attempted to load the ad.
  * @param error The error that caused the load to fail.
  */
-- (void)intersitialViewControllerAdFailedToLoad:(ASInterstitialViewController *)viewController withError:(NSError *)error;
-
-@optional
+- (void)interstitialViewControllerAdFailedToLoad:(ASInterstitialViewController *)viewController withError:(NSError *)error;
 
 /*!
  * Called just before the view appears
  * 
  * @param viewController The view controller whose view is about to appear.
  */
-- (void)intersitialViewControllerWillAppear:(ASInterstitialViewController *)viewController;
+- (void)interstitialViewControllerWillAppear:(ASInterstitialViewController *)viewController;
 
 /*!
  * Called just after the view controller's view appears.
  *
  * @param viewController The view controller whose view appeared.
  */
-- (void)intersitialViewControllerDidAppear:(ASInterstitialViewController *)viewController;
+- (void)interstitialViewControllerDidAppear:(ASInterstitialViewController *)viewController;
+
+/*!
+ * Called after an ad finishes playing.
+ *
+ * @param viewController The view controller whose view is about to be dismissed.
+ */
+- (void)interstitialViewControllerAdDidComplete:(ASInterstitialViewController *)viewController;
 
 /*!
  * Called just before the view is dismissed

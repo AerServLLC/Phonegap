@@ -12,8 +12,12 @@
 
 @interface ASFileManager : NSObject
 
-- (ASFileManager *)manager; // singleton
+// singleton
+- (ASFileManager *)manager;
 
-+ (NSString *)readVersionFromBundle; // pulls version number from VERSION file, only works for apps that include the VERSION file in its bundle
+// pulls version number from VERSION file, only works for apps that include the VERSION file in its bundle
++ (NSString *)readVersionFromBundle;
+
+
 
 @end

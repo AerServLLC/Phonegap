@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "ASConstants.h"
 
 @protocol ASAdViewDelegate;
 
@@ -60,12 +61,16 @@ extern const CGSize ASWideSkypscraperSize;
  */
 @property (nonatomic, copy) NSString* placementID;
 
-/*! 
- * An optional seet of keywords that should be passe to the ad server to recieve
+/*!
+ * An optional seet of keywords that should be passed to the ad server to recieve
  * more relevant advertising.
- * 
  */
 @property (nonatomic, strong) NSArray* keyWords;
+/*!
+ * An optional seet of keywords that should be passed to the ad server to recieve
+ * more relevant advertising.
+ */
+@property (nonatomic, strong) NSDictionary* pubKeys;
 
 /*!
  * A core location object represening the uers location that should be passed to the server
@@ -73,11 +78,18 @@ extern const CGSize ASWideSkypscraperSize;
  */
 @property (nonatomic, copy) CLLocation* location;
 
-/*!
- * If set to YES the ads are in testing mode and pulled form the staging server.
- * to recieve more relevant ads. If this is not set the users current location is used.
+///*!
+// * If set to YES the ads are in testing mode and pulled form the staging server.
+// * to recieve more relevant ads. If this is not set the users current location is used.
+// */
+//@property (nonatomic, assign) BOOL isTesting;
+
+/*! A flag that defines the environment that the adserver requests are sent to.
+ * kASEnvProduction, kASEnvStaging are the recommended choices for this flag.
+ *
+ * Remember to set this to kASEnvProduction before production builds!!!
  */
-@property (nonatomic, assign) BOOL isTesting;
+@property (nonatomic, assign) ASEnvironmentType env;
 
 /*!
  * If set to YES the ads are in preload mode and will attempt to preload when loadAd is called
@@ -95,8 +107,16 @@ extern const CGSize ASWideSkypscraperSize;
 /*!
  * The number of seconds before loading the ad should timeout.
  * Ad will send adViewDidFailToLoadAd:withError: message on timeout.
+ * Defaults to 15 seconds.
  */
 @property (nonatomic, assign) NSTimeInterval timeoutInterval;
+
+/*!
+ * When set to YES will invoke a location services authorization request
+ * if the location services authorization is undetermined. Default is NO.
+ */
+@property (nonatomic, assign) BOOL locationServicesEnabled;
+
 
 /*! 
  * Initializes an the view with the given ad ID and banner size.
@@ -109,7 +129,7 @@ extern const CGSize ASWideSkypscraperSize;
 
 /*!
  * Requests a new ad from the server. If an ad is already loading
- * this call will be ignored. You can use 'forceRefreshAd' to force cancle
+ * this call will be ignored. You can use 'forceRefreshAd' to force cancel
  * any existing ad requests and force a new ad to load.
  */
 - (void)loadAd;
@@ -182,6 +202,13 @@ extern const CGSize ASWideSkypscraperSize;
  */
 - (void)cancel;
 
+/*!
+ * getIsUnity, setIsUnity
+ * 
+ * These methods were added for the unity adapator, can be ignored for all other uses.
+ */
++ (BOOL)getIsUnity;
++ (void)setIsUnity:(BOOL) val;
 
 @end
 /*!
@@ -199,6 +226,7 @@ extern const CGSize ASWideSkypscraperSize;
 - (UIViewController *)viewControllerForPresentingModalView;
 
 @optional
+
 /*!
  * This called when the ad has been fully loaded.
  *

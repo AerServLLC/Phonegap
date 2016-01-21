@@ -7,11 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import <GADAdSize.h>
-#import <GADBannerViewDelegate.h>
-#import <GADInAppPurchaseDelegate.h>
-#import <GADRequest.h>
-#import <GADRequestError.h>
+#import <GoogleMobileAds/GADAdSize.h>
+#import <GoogleMobileAds/GADBannerViewDelegate.h>
+#import <GoogleMobileAds/GADInAppPurchaseDelegate.h>
+#import <GoogleMobileAds/GADRequest.h>
+#import <GoogleMobileAds/GADRequestError.h>
+
+#ifndef IBInspectable
+#define IBInspectable
+#endif
 
 /// The view that displays banner ads. A minimum implementation to get an ad from within a
 /// UIViewController class is:

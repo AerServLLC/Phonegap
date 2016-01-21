@@ -6,66 +6,114 @@
 	<dict>
 		<key>Headers/ASAdView.h</key>
 		<data>
-		xdagNWI4cUHZZ6tNObgaww35Y8o=
+		0iEm1x/55jQEYjtKbgjjhDBLNtE=
+		</data>
+		<key>Headers/ASAlertManager.h</key>
+		<data>
+		KFUzchP0Eq98sP3woiMfNNq9Ib0=
+		</data>
+		<key>Headers/ASBannerAdProvider.h</key>
+		<data>
+		lWqWuDkOynbwEEqziObIsSxCI6E=
+		</data>
+		<key>Headers/ASConstants.h</key>
+		<data>
+		ZztiXeQk6sZP+OyVVEIjSDlpb0k=
+		</data>
+		<key>Headers/ASCustomBannerAdProvider.h</key>
+		<data>
+		wjxckc34XTSUxJE1c//ZKs/STxM=
+		</data>
+		<key>Headers/ASCustomInterstitialAdProvider.h</key>
+		<data>
+		0HlbbuS9SY7UcePUcNdj9M4FzqM=
 		</data>
 		<key>Headers/ASFileManager.h</key>
 		<data>
-		W1APsgXMvWFqod01YULFDBj3BDQ=
+		WQwHtRXwsOkpa/AdOb+sYRTq+TQ=
+		</data>
+		<key>Headers/ASInterstitialAdProvider.h</key>
+		<data>
+		4LadOp3mrGoY0PGC9AkW76D3Rk0=
 		</data>
 		<key>Headers/ASInterstitialViewController.h</key>
 		<data>
-		I55bR0dn8QrGJnj8L2XQgXrA4BM=
+		IeLoqVFtgnYBDzxjhfxVLRCYuVY=
 		</data>
 		<key>Headers/AerServSDK.h</key>
 		<data>
-		njJ5bTk/T2ruXM1tSIVrPgGYXkU=
+		tjHkK4lGpNASJsZgXbTK8g2xxlo=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		EZ89zUArW4xM2HZEhFNIC8XBEyI=
+		sJGeJxx8Jxb51Rmo9205acimYB8=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
 		E74Pn7j7w5yR1AD+cTXBWQY+754=
 		</data>
-		<key>VERSION</key>
-		<data>
-		rAAi5UyysSL4nmErn+/TUfVehZA=
-		</data>
 		<key>embedded.mobileprovision</key>
 		<data>
-		nHU4nezKYIqoteoFdydbUuz5G3c=
+		NHtqna3k8oOfgZIgyUlRo6FJBH8=
+		</data>
+		<key>mraid.js</key>
+		<data>
+		T6nNSYyV480PcDuWzOEXDnASEks=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
 		<key>Headers/ASAdView.h</key>
 		<data>
-		xdagNWI4cUHZZ6tNObgaww35Y8o=
+		0iEm1x/55jQEYjtKbgjjhDBLNtE=
+		</data>
+		<key>Headers/ASAlertManager.h</key>
+		<data>
+		KFUzchP0Eq98sP3woiMfNNq9Ib0=
+		</data>
+		<key>Headers/ASBannerAdProvider.h</key>
+		<data>
+		lWqWuDkOynbwEEqziObIsSxCI6E=
+		</data>
+		<key>Headers/ASConstants.h</key>
+		<data>
+		ZztiXeQk6sZP+OyVVEIjSDlpb0k=
+		</data>
+		<key>Headers/ASCustomBannerAdProvider.h</key>
+		<data>
+		wjxckc34XTSUxJE1c//ZKs/STxM=
+		</data>
+		<key>Headers/ASCustomInterstitialAdProvider.h</key>
+		<data>
+		0HlbbuS9SY7UcePUcNdj9M4FzqM=
 		</data>
 		<key>Headers/ASFileManager.h</key>
 		<data>
-		W1APsgXMvWFqod01YULFDBj3BDQ=
+		WQwHtRXwsOkpa/AdOb+sYRTq+TQ=
+		</data>
+		<key>Headers/ASInterstitialAdProvider.h</key>
+		<data>
+		4LadOp3mrGoY0PGC9AkW76D3Rk0=
 		</data>
 		<key>Headers/ASInterstitialViewController.h</key>
 		<data>
-		I55bR0dn8QrGJnj8L2XQgXrA4BM=
+		IeLoqVFtgnYBDzxjhfxVLRCYuVY=
 		</data>
 		<key>Headers/AerServSDK.h</key>
 		<data>
-		njJ5bTk/T2ruXM1tSIVrPgGYXkU=
+		tjHkK4lGpNASJsZgXbTK8g2xxlo=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
 		E74Pn7j7w5yR1AD+cTXBWQY+754=
 		</data>
-		<key>VERSION</key>
-		<data>
-		rAAi5UyysSL4nmErn+/TUfVehZA=
-		</data>
 		<key>embedded.mobileprovision</key>
 		<data>
-		nHU4nezKYIqoteoFdydbUuz5G3c=
+		NHtqna3k8oOfgZIgyUlRo6FJBH8=
+		</data>
+		<key>mraid.js</key>
+		<data>
+		T6nNSYyV480PcDuWzOEXDnASEks=
 		</data>
 	</dict>
 	<key>rules</key>

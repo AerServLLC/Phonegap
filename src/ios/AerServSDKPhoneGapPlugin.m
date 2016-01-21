@@ -48,7 +48,7 @@
     self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
 
 
-	self.adController = [ASInterstitialViewController viewControllerForPlacementID:plc withDelegate:self];
+	self.adController = [[ASInterstitialViewController alloc] viewControllerForPlacementID:plc withDelegate:self];
 	if(preload) {
 		self.adController.isPreload = preload;
 	}
@@ -174,7 +174,6 @@
 	CGSize size = { width, height };
 	self.bannerView = [[ASAdView alloc] initWithPlacementID:plc size:size];
 
-	self.bannerView.isTesting = NO;
 	self.bannerView.sizeAdToFit = YES;
 	//self.bannerView.timeoutInterval = 5.0;
 	if([keyWords length] != 0) {
