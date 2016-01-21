@@ -16,7 +16,7 @@
 
 - (void) loadInterstitial:(CDVInvokedUrlCommand *)command;
 - (void) loadBanner:(CDVInvokedUrlCommand *)command;
-- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords preload:(bool) preload;
+- (void) showInterstitial:(CDVInvokedUrlCommand *)command;
 - (void) showBanner:(NSString *) plc width:(int) width height:(int) height position:(int) position keyWords:(NSString *) keyWords;
 - (void) killBanner:(CDVInvokedUrlCommand *)command;
 - (void) pauseBanner; //not supported yet

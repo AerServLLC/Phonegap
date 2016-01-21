@@ -21,6 +21,7 @@
 @property (strong, nonatomic) UIViewController *rootViewController;
 @property (strong, nonatomic) CDVInvokedUrlCommand *interstitial_command;
 @property (strong, nonatomic) CDVInvokedUrlCommand *banner_command;
+@property (nonatomic, assign) BOOL isPreload;
 
 @end
 
@@ -33,43 +34,38 @@
 /** start of interstitial methods **/
 
 - (void) loadInterstitial:(CDVInvokedUrlCommand *)command {
+    self.isPreload = NO;
 
 	self.interstitial_command =  command;
 	NSString* plc = [command.arguments objectAtIndex:0];
+    self.adController = [[ASInterstitialViewController alloc] viewControllerForPlacementID:plc withDelegate:self];
+    
+    // Set keywords
 	NSString* keyWords = [command.arguments objectAtIndex:1];
+   	if([keyWords length] != 0) {
+   		NSMutableArray *asKeyWords = [[keyWords componentsSeparatedByString:@","] mutableCopy];
+   		self.adController.keyWords = [asKeyWords copy];
+   	}
+
+    // Set preload flag
     NSString* preloadStr = [command.arguments objectAtIndex:2];
-    [self showInterstitial:plc keyWords:keyWords preload:[preloadStr boolValue]];
-
-
+    self.isPreload = [preloadStr boolValue];
+    self.adController.isPreload = self.isPreload;
+    
+    self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [self.adController loadAd];
 }
 
-- (void) showInterstitial:(NSString *) plc keyWords:(NSString *) keyWords preload:(bool) preload {
-
-    self.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-
-
-	self.adController = [[ASInterstitialViewController alloc] viewControllerForPlacementID:plc withDelegate:self];
-	if(preload) {
-		self.adController.isPreload = preload;
-	}
-
-	if([keyWords length] != 0) {
-
-		NSMutableArray *asKeyWords = [[keyWords componentsSeparatedByString:@","] mutableCopy];    		
-		self.adController.keyWords = [asKeyWords copy];
-
-	}
-
-	//self.adController.timeoutInterval = 5;
-	[self.adController loadAd];
-
+- (void) showInterstitial:(CDVInvokedUrlCommand *)command {
+    NSLog(@"showing ad");
+    [self.adController showFromViewController:self.rootViewController];
 }
 
 - (void) interstitialViewControllerAdLoadedSuccessfully:(ASInterstitialViewController *)viewController {
-
-	[self.adController showFromViewController:self.rootViewController];
-
-	NSLog(@"ad was loaded");
+    NSLog(@"ad was loaded");
+    if (!self.isPreload) {
+        [self.adController showFromViewController:self.rootViewController];
+    }
 
 	NSArray *args = @[@"onAdLoadedCallback", @""];
 	CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: args];
